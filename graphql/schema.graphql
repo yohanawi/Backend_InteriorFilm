@@ -1,0 +1,693 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime
+    @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"Indicates what fields are available at the top level of a query operation."
+type Query {
+    catalogs: [Catalog!]!
+        @all(model: "App\\Models\\Catalog", scopes: ["active"])
+
+    catalog(slug: String! @eq): Catalog
+        @first(model: "App\\Models\\Catalog", scopes: ["active"])
+
+    category(slug: String! @eq): Category
+        @first(model: "App\\Models\\Category", scopes: ["active"])
+
+    product(slug: String! @eq): Product
+        @first(model: "App\\Models\\Product", scopes: ["active"])
+
+    me: Customer @guard(with: ["sanctum"])
+
+    myAddresses: [Address!]!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Queries\\MyAddresses")
+
+    myWishlist: [Product!]!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Queries\\MyWishlist")
+
+    myOrders: [Order!]!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Queries\\MyOrders")
+
+    order(id: ID, order_number: String): Order
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Queries\\GetOrder")
+
+    customers: [Customer!]! @paginate(defaultCount: 10)
+
+    customer(id: ID! @eq): Customer @find
+
+    # Admin queries for orders
+    orders(
+        status: String
+        payment_status: String
+        search: String
+        first: Int = 15
+        page: Int
+    ): OrderPaginator @field(resolver: "App\\GraphQL\\Queries\\GetOrders")
+
+    blogs(
+        status: String
+        catalog_id: ID
+        search: String
+        first: Int
+        page: Int
+    ): BlogPaginator @field(resolver: "App\\GraphQL\\Queries\\GetBlogs")
+
+    blog(slug: String!): Blog @field(resolver: "App\\GraphQL\\Queries\\GetBlog")
+
+    # Contact messages query for admin
+    contactMessages(
+        status: String
+        search: String
+        first: Int = 15
+        page: Int
+    ): ContactMessagePaginator
+        @field(resolver: "App\\GraphQL\\Queries\\GetContactMessages")
+
+    contactMessage(id: ID!): ContactMessage @find
+
+    # Wrapping Areas queries
+    wrappingAreas(
+        is_active: Boolean
+        search: String
+        first: Int
+        page: Int
+    ): WrappingAreaPaginator
+        @field(resolver: "App\\GraphQL\\Queries\\GetWrappingAreas")
+
+    wrappingArea(slug: String!): WrappingArea
+        @field(resolver: "App\\GraphQL\\Queries\\GetWrappingArea")
+}
+
+type BlogPaginator {
+    data: [Blog!]!
+    paginatorInfo: PaginatorInfo!
+}
+
+type ContactMessagePaginator {
+    data: [ContactMessage!]!
+    paginatorInfo: PaginatorInfo!
+}
+
+type WrappingAreaPaginator {
+    data: [WrappingArea!]
+    paginatorInfo: PaginatorInfo!
+}
+
+type WrappingArea {
+    id: ID!
+    slug: String!
+    title: String!
+    meta_title: String!
+    meta_description: String!
+    keywords: [String!]
+    main_heading: String!
+    main_description: String!
+    main_image: String
+    why_partner_heading: String!
+    why_partner_description: String!
+    why_partner_image: String
+    features: [WrappingFeature!]
+    guide_heading: String!
+    guide_description: String!
+    guide: [GuideItem!]
+    why_use_heading: String!
+    why_use_description: String!
+    hero_text: String!
+    hero_subtext: String
+    hero_image: String
+    gallery_heading: String!
+    gallery_description: String!
+    photos: [WrappingPhoto!]
+    products: [Product!]
+    is_active: Boolean!
+    sort_order: Int!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type WrappingFeature {
+    title: String
+    description: String
+}
+
+type GuideItem {
+    image: String
+    heading: String
+    subheading: String
+    description: String
+    features: [GuideFeature!]
+}
+
+type GuideFeature {
+    title: String
+}
+
+type WrappingPhoto {
+    src: String
+    alt: String
+}
+
+type ContactMessage {
+    id: ID!
+    name: String!
+    email: String!
+    phone: String!
+    message: String!
+    status: String!
+    ip_address: String
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Blog {
+    id: ID!
+    title: String!
+    slug: String!
+    excerpt: String
+    content: String!
+    featured_image: String
+    tags: String
+    publish_date: String
+    catalog_id: ID
+    catalog: Catalog @belongsTo
+    meta_title: String
+    meta_description: String
+    keywords: String
+    author_name: String!
+    author_position: String
+    author_profile_image: String
+    status: String!
+    allow_comments: Boolean!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Mutation {
+    register(input: RegisterInput! @spread): AuthPayload!
+
+    login(email: String!, password: String!): AuthPayload!
+
+    forgotPassword(email: String!): ForgotPasswordResponse!
+
+    resetPassword(input: ResetPasswordInput! @spread): MessageResponse!
+
+    logout: MessageResponse! @guard(with: ["sanctum"])
+
+    upsertAddress(input: UpsertAddressInput! @spread): Address!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Mutations\\UpsertAddress")
+
+    deleteAddress(id: ID!): MessageResponse!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Mutations\\DeleteAddress")
+
+    updateCustomer(input: UpdateCustomerInput! @spread): Customer!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Mutations\\UpdateCustomer")
+
+    changeCustomerPassword(
+        input: ChangeCustomerPasswordInput! @spread
+    ): MessageResponse!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Mutations\\ChangeCustomerPassword")
+
+    addToWishlist(product_id: ID!): MessageResponse!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Mutations\\AddToWishlist")
+
+    removeFromWishlist(product_id: ID!): MessageResponse!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Mutations\\RemoveFromWishlist")
+
+    createOrder(input: CreateOrderInput! @spread): OrderResponse!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Mutations\\CreateOrder")
+
+    createGuestOrder(input: CreateGuestOrderInput! @spread): OrderResponse!
+        @field(resolver: "App\\GraphQL\\Mutations\\CreateGuestOrder")
+
+    confirmNgeniusPayment(order_number: String!, ref: String!): OrderResponse!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Mutations\\ConfirmNgeniusPayment")
+
+    # N-Genius payment management mutations (Admin)
+    captureNgeniusPayment(order_number: String!, amount: Float): OrderResponse!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Mutations\\CaptureNgeniusPayment")
+
+    refundNgeniusPayment(
+        order_number: String!
+        amount: Float
+        reason: String
+    ): OrderResponse!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Mutations\\RefundNgeniusPayment")
+
+    voidNgeniusPayment(order_number: String!, reason: String): OrderResponse!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Mutations\\VoidNgeniusPayment")
+
+    cancelOrder(order_id: ID!): MessageResponse!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Mutations\\CancelOrder")
+
+    # Admin mutations for orders
+    updateOrderStatus(
+        order_id: ID!
+        status: String!
+        comment: String
+        notify_customer: Boolean
+    ): Order! @field(resolver: "App\\GraphQL\\Mutations\\UpdateOrderStatus")
+
+    updateOrderPaymentStatus(order_id: ID!, payment_status: String!): Order!
+        @field(resolver: "App\\GraphQL\\Mutations\\UpdateOrderPaymentStatus")
+
+    addTrackingNumber(order_id: ID!, tracking_number: String!): Order!
+        @field(resolver: "App\\GraphQL\\Mutations\\AddTrackingNumber")
+
+    # Contact form submission mutation (public - no auth required)
+    submitContactMessage(
+        input: SubmitContactMessageInput! @spread
+    ): ContactMessageResponse!
+        @field(resolver: "App\\GraphQL\\Mutations\\SubmitContactMessage")
+
+    # Admin mutations for contact messages
+    updateContactStatus(id: ID!, status: String!): ContactMessage!
+        @field(resolver: "App\\GraphQL\\Mutations\\UpdateContactStatus")
+
+    deleteContactMessage(id: ID!): MessageResponse!
+        @field(resolver: "App\\GraphQL\\Mutations\\DeleteContactMessage")
+}
+
+input UpsertAddressInput {
+    id: ID
+    address_line_1: String! @rules(apply: ["required", "string", "max:255"])
+    address_line_2: String @rules(apply: ["nullable", "string", "max:255"])
+    city: String! @rules(apply: ["required", "string", "max:255"])
+    postal_code: String! @rules(apply: ["required", "string", "max:50"])
+    state: String! @rules(apply: ["required", "string", "max:255"])
+    country: String! @rules(apply: ["required", "string", "max:255"])
+    type: Int! @rules(apply: ["required", "integer", "min:0", "max:255"])
+    is_primary: Boolean @rules(apply: ["boolean"])
+}
+
+input UpdateCustomerInput {
+    first_name: String @rules(apply: ["sometimes", "string", "max:255"])
+    last_name: String @rules(apply: ["sometimes", "string", "max:255"])
+    email: String @rules(apply: ["sometimes", "email", "max:255"])
+    company: String @rules(apply: ["nullable", "string", "max:255"])
+    phone: String @rules(apply: ["nullable", "string", "max:255"])
+    address: String @rules(apply: ["nullable", "string"])
+    city: String @rules(apply: ["nullable", "string", "max:255"])
+    state: String @rules(apply: ["nullable", "string", "max:255"])
+    country: String @rules(apply: ["nullable", "string", "max:255"])
+    postal_code: String @rules(apply: ["nullable", "string", "max:50"])
+}
+
+input ChangeCustomerPasswordInput {
+    current_password: String! @rules(apply: ["required", "string"])
+    new_password: String!
+        @rules(apply: ["required", "string", "min:8", "confirmed"])
+    new_password_confirmation: String!
+}
+
+input RegisterInput {
+    first_name: String! @rules(apply: ["required", "string", "max:255"])
+    last_name: String! @rules(apply: ["required", "string", "max:255"])
+    email: String!
+        @rules(apply: ["required", "email", "unique:customers,email"])
+    company: String
+    password: String! @rules(apply: ["required", "min:8", "confirmed"])
+    password_confirmation: String!
+    phone: String
+    address: String
+    city: String
+    state: String
+    country: String
+    postal_code: String
+}
+
+input ResetPasswordInput {
+    email: String! @rules(apply: ["required", "email"])
+    token: String! @rules(apply: ["required"])
+    password: String! @rules(apply: ["required", "min:8", "confirmed"])
+    password_confirmation: String!
+}
+
+type AuthPayload {
+    token: String!
+    customer: Customer!
+    message: String!
+}
+
+type ForgotPasswordResponse {
+    message: String!
+    success: Boolean!
+}
+
+type MessageResponse {
+    message: String!
+    success: Boolean!
+}
+
+type Customer {
+    id: ID!
+    first_name: String!
+    last_name: String!
+    full_name: String!
+    email: String!
+    company: String
+    email_verified_at: DateTime
+    phone: String
+    address: String
+    city: String
+    state: String
+    country: String
+    postal_code: String
+    date_of_birth: String
+    status: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Address {
+    id: ID!
+    customer_id: ID
+    user_id: ID!
+    address_line_1: String!
+    address_line_2: String
+    city: String!
+    postal_code: String!
+    state: String!
+    country: String!
+    type: Int!
+    is_primary: Boolean!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Catalog {
+    id: ID!
+    name: String!
+    slug: String!
+    image: String
+    description: String
+    meta_title: String
+    meta_description: String
+    meta_keywords: String
+    is_active: Boolean!
+    sort_order: Int!
+    related_product_id: ID
+    relatedProduct: Product @belongsTo(relation: "relatedProduct")
+    categories: [Category!]! @hasMany
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Category {
+    id: ID!
+    catalog_id: ID!
+    name: String!
+    slug: String!
+    image: String
+    description: String
+    meta_title: String
+    meta_description: String
+    meta_keywords: String
+    is_active: Boolean!
+    sort_order: Int!
+    related_product_id: ID
+    relatedProduct: Product @belongsTo(relation: "relatedProduct")
+    catalog: Catalog! @belongsTo
+    products: [Product!]! @hasMany
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Product {
+    id: ID!
+    catalog_id: ID
+    category_id: ID!
+    name: String!
+    slug: String!
+    thumbnail: String
+    images: [String!]
+    price: Float!
+    discount_type: String!
+    discount_value: Float
+    vat: Float
+    is_physical: Boolean!
+    weight: Float
+    width: Float
+    height: Float
+    length: Float
+    description: String
+    sku: String
+    stock_shelf: Int
+    stock_warehouse: Int
+    allow_backorders: Boolean!
+    status: String!
+    published_at: DateTime
+    meta_title: String
+    meta_description: String
+    meta_keywords: String
+    is_featured: Boolean!
+    is_popular: Boolean!
+    is_active: Boolean!
+    sort_order: Int!
+    category: Category! @belongsTo
+    specification: ProductSpecification @hasOne
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type ProductSpecification {
+    id: ID!
+    product_id: ID!
+    certifications: [String!]
+    features: [String!]
+    features_items: [ProductFeature!]
+    spec_dimensions: String
+    surface_finish: String
+    tensile_strength: String
+    application_temperature: String
+    elongation: String
+    service_temperature: String
+    storage: String
+    dimensional_stability: String
+    release_paper: String
+    adhesive: String
+    adhesive_strength: String
+    shelf_life: String
+    warranty: String
+    product: Product! @belongsTo
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type ProductFeature {
+    name: String!
+    image: String
+}
+# Order Types
+type Order {
+    id: ID!
+    order_number: String!
+    customer_id: ID!
+    customer: Customer! @belongsTo
+    status: String!
+    payment_status: String!
+    payment_method: String!
+    ngenius_reference: String
+    ngenius_payment_url: String
+    ngenius_currency: String
+    ngenius_amount_minor: Int
+    ngenius_last_payment_state: String
+    shipping_first_name: String!
+    shipping_last_name: String!
+    shipping_full_name: String!
+    shipping_email: String!
+    shipping_phone: String!
+    shipping_address: String!
+    shipping_city: String!
+    shipping_state: String
+    shipping_country: String!
+    shipping_postal_code: String!
+    billing_first_name: String
+    billing_last_name: String
+    billing_full_name: String
+    billing_email: String
+    billing_phone: String
+    billing_address: String
+    billing_city: String
+    billing_state: String
+    billing_country: String
+    billing_postal_code: String
+    subtotal: Float!
+    tax: Float!
+    shipping_cost: Float!
+    discount: Float!
+    total: Float!
+    notes: String
+    coupon_code: String
+    tracking_number: String
+    paid_at: DateTime
+    shipped_at: DateTime
+    delivered_at: DateTime
+    items: [OrderItem!]! @hasMany
+    statusHistories: [OrderStatusHistory!]! @hasMany
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type OrderItem {
+    id: ID!
+    order_id: ID!
+    product_id: ID
+    product: Product @belongsTo
+    product_name: String!
+    product_slug: String
+    product_sku: String
+    product_image: String
+    unit_price: Float!
+    quantity: Int!
+    subtotal: Float!
+    tax: Float!
+    total: Float!
+    attributes: String
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type OrderStatusHistory {
+    id: ID!
+    order_id: ID!
+    user_id: ID
+    user: User @belongsTo
+    status: String!
+    comment: String
+    notify_customer: Boolean!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type OrderPaginator {
+    data: [Order!]!
+    paginatorInfo: PaginatorInfo!
+}
+
+type PaginatorInfo {
+    count: Int!
+    currentPage: Int!
+    firstItem: Int
+    hasMorePages: Boolean!
+    lastItem: Int
+    lastPage: Int!
+    perPage: Int!
+    total: Int!
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+}
+
+# Order Inputs
+input CreateOrderInput {
+    items: [OrderItemInput!]! @rules(apply: ["required", "array", "min:1"])
+    shipping_address_id: ID
+    shipping_first_name: String!
+        @rules(apply: ["required", "string", "max:255"])
+    shipping_last_name: String! @rules(apply: ["required", "string", "max:255"])
+    shipping_email: String! @rules(apply: ["required", "email", "max:255"])
+    shipping_phone: String! @rules(apply: ["required", "string", "max:255"])
+    shipping_address: String! @rules(apply: ["required", "string"])
+    shipping_city: String! @rules(apply: ["required", "string", "max:255"])
+    shipping_state: String @rules(apply: ["nullable", "string", "max:255"])
+    shipping_country: String! @rules(apply: ["required", "string", "max:255"])
+    shipping_postal_code: String!
+        @rules(apply: ["required", "string", "max:50"])
+    billing_same_as_shipping: Boolean!
+    billing_first_name: String @rules(apply: ["string", "max:255"])
+    billing_last_name: String @rules(apply: ["string", "max:255"])
+    billing_email: String @rules(apply: ["email", "max:255"])
+    billing_phone: String @rules(apply: ["string", "max:255"])
+    billing_address: String
+    billing_city: String @rules(apply: ["string", "max:255"])
+    billing_state: String @rules(apply: ["string", "max:255"])
+    billing_country: String @rules(apply: ["string", "max:255"])
+    billing_postal_code: String @rules(apply: ["string", "max:50"])
+    payment_method: String!
+        @rules(
+            apply: [
+                "required"
+                "in:credit_card,debit_card,paypal,stripe,cash_on_delivery,bank_transfer,ngenius_hpp"
+            ]
+        )
+    notes: String @rules(apply: ["nullable", "string"])
+    coupon_code: String @rules(apply: ["nullable", "string", "max:255"])
+}
+
+input CreateGuestOrderInput {
+    items: [OrderItemInput!]! @rules(apply: ["required", "array", "min:1"])
+    shipping_first_name: String!
+        @rules(apply: ["required", "string", "max:255"])
+    shipping_last_name: String! @rules(apply: ["required", "string", "max:255"])
+    shipping_email: String! @rules(apply: ["required", "email", "max:255"])
+    shipping_phone: String! @rules(apply: ["required", "string", "max:255"])
+    shipping_address: String! @rules(apply: ["required", "string"])
+    shipping_city: String! @rules(apply: ["required", "string", "max:255"])
+    shipping_state: String @rules(apply: ["nullable", "string", "max:255"])
+    shipping_country: String! @rules(apply: ["required", "string", "max:255"])
+    shipping_postal_code: String!
+        @rules(apply: ["required", "string", "max:50"])
+    billing_same_as_shipping: Boolean!
+    billing_first_name: String @rules(apply: ["string", "max:255"])
+    billing_last_name: String @rules(apply: ["string", "max:255"])
+    billing_email: String @rules(apply: ["email", "max:255"])
+    billing_phone: String @rules(apply: ["string", "max:255"])
+    billing_address: String
+    billing_city: String @rules(apply: ["string", "max:255"])
+    billing_state: String @rules(apply: ["string", "max:255"])
+    billing_country: String @rules(apply: ["string", "max:255"])
+    billing_postal_code: String @rules(apply: ["string", "max:50"])
+    payment_method: String!
+        @rules(
+            apply: [
+                "required"
+                "in:credit_card,debit_card,paypal,stripe,cash_on_delivery,bank_transfer,ngenius_hpp"
+            ]
+        )
+    notes: String @rules(apply: ["nullable", "string"])
+    coupon_code: String @rules(apply: ["nullable", "string", "max:255"])
+    guest_session_id: String @rules(apply: ["nullable", "string", "max:100"])
+}
+
+input OrderItemInput {
+    product_id: ID! @rules(apply: ["required", "exists:products,id"])
+    quantity: Int! @rules(apply: ["required", "integer", "min:1"])
+}
+
+input SubmitContactMessageInput {
+    name: String! @rules(apply: ["required", "string", "max:255"])
+    email: String! @rules(apply: ["required", "email", "max:255"])
+    phone: String! @rules(apply: ["required", "string", "max:50"])
+    message: String! @rules(apply: ["required", "string", "max:5000"])
+}
+
+type ContactMessageResponse {
+    message: String!
+    success: Boolean!
+    contact: ContactMessage
+}
+
+type OrderResponse {
+    order: Order!
+    message: String!
+    success: Boolean!
+    payment_url: String
+}
