@@ -16,84 +16,9 @@
                     <span class="menu-title">Dashboards</span>
                 </a>
             </div>
-            <div class="pt-5 menu-item">
+            <div class="pt-2 menu-item">
                 <div class="menu-content">
-                    <span class="menu-heading fw-bold text-uppercase fs-7">Apps</span>
-                </div>
-            </div>
-
-            <div class="menu-item">
-                <div data-kt-menu-trigger="click"
-                    class="menu-item menu-accordion {{ request()->routeIs('orders.*') ? 'here show' : '' }}">
-                    <span class="menu-link">
-                        <span class="menu-icon">
-                            <i class="ki-outline ki-purchase fs-2"></i>
-                        </span>
-                        <span class="menu-title">Orders</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('orders.index') ? 'active' : '' }}"
-                                href="{{ route('orders.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Order List</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link" href="{{ route('orders.index', ['payment_status' => 'pending']) }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Pending Payments</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link" href="{{ route('orders.index', ['status' => 'refunded']) }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Refunds</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="menu-item">
-                <div data-kt-menu-trigger="click"
-                    class="menu-item menu-accordion {{ request()->routeIs('catalog.products.*') ? 'here show' : '' }}">
-                    <span class="menu-link">
-                        <span class="menu-icon">
-                            <i class="ki-outline ki-parcel fs-2"></i>
-                        </span>
-                        <span class="menu-title">Products</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('catalog.products.index') ? 'active' : '' }}"
-                                href="{{ route('catalog.products.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Product List</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('catalog.products.create') ? 'active' : '' }}"
-                                href="{{ route('catalog.products.create') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">New Product</span>
-                            </a>
-                        </div>
-                    </div>
+                    <span class="menu-heading fw-bold text-uppercase fs-7">Catalog</span>
                 </div>
             </div>
 
@@ -166,6 +91,87 @@
             </div>
 
             <div class="menu-item">
+                <div data-kt-menu-trigger="click"
+                    class="menu-item menu-accordion {{ request()->routeIs('catalog.products.*') ? 'here show' : '' }}">
+                    <span class="menu-link">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-parcel fs-2"></i>
+                        </span>
+                        <span class="menu-title">Products</span>
+                        <span class="menu-arrow"></span>
+                    </span>
+
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('catalog.products.index') ? 'active' : '' }}"
+                                href="{{ route('catalog.products.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Product List</span>
+                            </a>
+                        </div>
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('catalog.products.create') ? 'active' : '' }}"
+                                href="{{ route('catalog.products.create') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">New Product</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <div data-kt-menu-trigger="click"
+                    class="menu-item menu-accordion {{ request()->routeIs('orders.*') ? 'here show' : '' }}">
+                    <span class="menu-link">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-purchase fs-2"></i>
+                        </span>
+                        <span class="menu-title">Orders</span>
+                        <span class="menu-arrow"></span>
+                    </span>
+
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('orders.index') ? 'active' : '' }}"
+                                href="{{ route('orders.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Order List</span>
+                            </a>
+                        </div>
+                        <div class="menu-item">
+                            <a class="menu-link" href="{{ route('orders.index', ['payment_status' => 'pending']) }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Pending Payments</span>
+                            </a>
+                        </div>
+                        <div class="menu-item">
+                            <a class="menu-link" href="{{ route('orders.index', ['status' => 'refunded']) }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Refunds</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-2 menu-item">
+                <div class="menu-content">
+                    <span class="menu-heading fw-bold text-uppercase fs-7">Customers & Users</span>
+                </div>
+            </div>
+
+            <div class="menu-item">
                 <a class="menu-link {{ request()->routeIs('customers.*') ? 'active' : '' }}"
                     href="{{ route('customers.index') }}">
                     <span class="menu-icon">
@@ -173,38 +179,6 @@
                     </span>
                     <span class="menu-title">Customers</span>
                 </a>
-            </div>
-
-            <div class="pt-5 menu-item">
-                <div class="menu-content">
-                    <span class="menu-heading fw-bold text-uppercase fs-7">CMS</span>
-                </div>
-            </div>
-
-            <div class="menu-item">
-                <a class="menu-link {{ request()->routeIs('blogs.*') ? 'active' : '' }}"
-                    href="{{ route('blogs.index') }}">
-                    <span class="menu-icon">
-                        <i class="ki-outline ki-document fs-2"></i>
-                    </span>
-                    <span class="menu-title">Blogs</span>
-                </a>
-            </div>
-
-            <div class="menu-item">
-                <a class="menu-link {{ request()->routeIs('wrapping-areas.*') ? 'active' : '' }}"
-                    href="{{ route('wrapping-areas.index') }}">
-                    <span class="menu-icon">
-                        <i class="ki-outline ki-question fs-2"></i>
-                    </span>
-                    <span class="menu-title">Wrapping Areas</span>
-                </a>
-            </div>
-
-            <div class="pt-5 menu-item">
-                <div class="menu-content">
-                    <span class="menu-heading fw-bold text-uppercase fs-7">Tools</span>
-                </div>
             </div>
 
             <div class="menu-item">
@@ -248,6 +222,42 @@
                     </div>
                 </div>
             </div>
+
+            <div class="pt-2 menu-item">
+                <div class="menu-content">
+                    <span class="menu-heading fw-bold text-uppercase fs-7">CMS</span>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <a href="{{ route('pages.index') }}" class="menu-link {{ request()->routeIs('pages.*') ? 'active' : '' }}">
+                    <span class="menu-icon">
+                        <i class="ki-outline ki-element-8 fs-2"></i>
+                    </span>
+                    <span class="menu-title">Pages</span>
+                </a>
+            </div>
+
+            <div class="menu-item">
+                <a class="menu-link {{ request()->routeIs('blogs.*') ? 'active' : '' }}"
+                    href="{{ route('blogs.index') }}">
+                    <span class="menu-icon">
+                        <i class="ki-outline ki-document fs-2"></i>
+                    </span>
+                    <span class="menu-title">Blogs</span>
+                </a>
+            </div>
+
+            <div class="menu-item">
+                <a class="menu-link {{ request()->routeIs('wrapping-areas.*') ? 'active' : '' }}"
+                    href="{{ route('wrapping-areas.index') }}">
+                    <span class="menu-icon">
+                        <i class="ki-outline ki-question fs-2"></i>
+                    </span>
+                    <span class="menu-title">Wrapping Areas</span>
+                </a>
+            </div>
+
             <div class="menu-item">
                 <a class="menu-link {{ request()->routeIs('contacts.*') ? 'active' : '' }}"
                     href="{{ route('contacts.index') }}">

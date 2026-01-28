@@ -10,6 +10,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PaymentReturnController;
 use App\Http\Controllers\WrappingAreaController;
+use App\Http\Controllers\PagesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -133,6 +134,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('{wrappingArea}', [WrappingAreaController::class, 'update'])->name('update');
         Route::delete('{wrappingArea}', [WrappingAreaController::class, 'destroy'])->name('destroy');
         Route::post('{wrappingArea}/toggle-active', [WrappingAreaController::class, 'toggleActive'])->name('toggle-active');
+    });
+
+    // Pages Management
+    Route::prefix('pages')->name('pages.')->group(function () {
+        Route::get('/', [PagesController::class, 'index'])->name('index');
+        Route::post('/', [PagesController::class, 'store'])->name('store');
+        Route::get('{page}', [PagesController::class, 'show'])->name('show');
+        Route::put('{page}', [PagesController::class, 'update'])->name('update');
+        Route::delete('{page}', [PagesController::class, 'destroy'])->name('destroy');
+
+        // SEO Management
+        Route::get('{page}/seo', [PagesController::class, 'seoEdit'])->name('seo-edit');
+        Route::put('{page}/seo', [PagesController::class, 'seoUpdate'])->name('seo-update');
+
+        // Content Management
+        Route::get('{page}/content', [PagesController::class, 'contentEdit'])->name('content-edit');
+        Route::put('{page}/content', [PagesController::class, 'contentUpdate'])->name('content-update');
     });
 });
 

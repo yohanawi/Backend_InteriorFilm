@@ -244,3 +244,27 @@ Breadcrumbs::for('wrapping-areas.edit', function (BreadcrumbTrail $trail, $wrapp
     $trail->parent('wrapping-areas.index');
     $trail->push('Edit ' . $wrappingArea->title, route('wrapping-areas.edit', $wrappingArea));
 });
+
+// Home > Dashboard > Pages
+Breadcrumbs::for('pages.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Pages Management', route('pages.index'));
+});
+
+// Home > Dashboard > Pages > [Page]
+Breadcrumbs::for('pages.show', function (BreadcrumbTrail $trail, $page) {
+    $trail->parent('pages.index');
+    $trail->push($page->title, route('pages.show', $page));
+});
+
+// Home > Dashboard > Pages > SEO Edit [Page]
+Breadcrumbs::for('pages.seo-edit', function (BreadcrumbTrail $trail, $page) {
+    $trail->parent('pages.index');
+    $trail->push('SEO: ' . $page->title, route('pages.seo-edit', $page));
+});
+
+// Home > Dashboard > Pages > Content Edit [Page]
+Breadcrumbs::for('pages.content-edit', function (BreadcrumbTrail $trail, $page) {
+    $trail->parent('pages.index');
+    $trail->push('Edit: ' . $page->title, route('pages.content-edit', $page));
+});

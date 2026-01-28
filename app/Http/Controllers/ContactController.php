@@ -12,25 +12,24 @@ class ContactController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ContactMessage::query()->latest();
-
-        // Filter by status if provided
-        if ($request->has('status') && $request->status !== 'all') {
-            $query->where('status', $request->status);
-        }
-
-        // Search functionality
-        if ($request->has('search') && !empty($request->search)) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%")
-                    ->orWhere('message', 'like', "%{$search}%");
-            });
-        }
-
-        $contacts = $query->paginate(10);
+        $contacts = ContactMessage::query()
+            ->latest()
+            // Filter by status if provided and not 'all'
+            ->when($request->filled('status') && $request->status !== 'all', function ($query) use ($request) {
+                $query->where('status', $request->status);
+            })
+            // Search by multiple columns
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('message', 'like', "%{$search}%");
+                });
+            })
+            ->paginate(10)
+            ->withQueryString(); // This keeps the search/filter params in pagination links
 
         return view('pages.apps.contacts.index', compact('contacts'));
     }

@@ -8,38 +8,34 @@
         {{ Breadcrumbs::render('apps.contacts.index') }}
     @endsection
 
-    <div class="card">        
-        <div class="pt-6 border-0 card-header">            
-            <div class="card-title">                
+    <div class="card">
+        <div class="pt-6 border-0 card-header">
+            <div class="card-title">
                 <div class="my-1 d-flex align-items-center position-relative">
                     <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
                     <input type="text" id="search-input" class="form-control form-control-solid w-250px ps-13"
                         placeholder="Search contacts..." value="{{ request('search') }}" />
-                </div>                
-            </div>            
-            
-            <div class="card-toolbar">                
-                <div class="gap-2 d-flex justify-content-end" data-kt-customer-table-toolbar="base">                    
-                    <select class="form-select form-select-solid w-150px" id="status-filter">
-                        <option value="all">All Status</option>
-                        <option value="new" {{ request('status') == 'new' ? 'selected' : '' }}>New</option>
-                        <option value="replied" {{ request('status') == 'replied' ? 'selected' : '' }}>Replied
-                        </option>
-                        <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed
-                        </option>
-                    </select>                    
-                </div>                
-            </div>            
-        </div>        
-        
-        <div class="pt-0 card-body">
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-            @endif
-            
+            </div>
+
+            <div class="card-toolbar">
+                <div class="gap-2 d-flex justify-content-end">
+                    @if (request()->has('search') || request()->has('status'))
+                        <a href="{{ route('contacts.index') }}" class="btn btn-light-danger btn-sm">Clear Filters</a>
+                    @endif
+
+                    <select class="form-select form-select-solid w-150px" id="status-filter" data-control="select2"
+                        data-hide-search="true">
+                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All Status</option>
+                        <option value="new" {{ request('status') == 'new' ? 'selected' : '' }}>New</option>
+                        <option value="replied" {{ request('status') == 'replied' ? 'selected' : '' }}>Replied</option>
+                        <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-0 card-body">
             <div class="table-responsive">
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_contacts_table">
                     <thead>
@@ -93,111 +89,267 @@
                                 <td class="text-end">
                                     <a href="#"
                                         class="btn btn-sm btn-light btn-active-light-primary btn-flex btn-center"
-                                        data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Actions
-                                        <i class="ki-outline ki-down fs-5 ms-1"></i></a>                                    
-                                    <div class="py-4 menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px"
-                                        data-kt-menu="true">                                        
+                                        data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                        Actions
+                                        <i class="ki-outline ki-down fs-5 ms-1"></i>
+                                    </a>
+
+                                    <div class="py-4 menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-700 menu-state-bg-light-primary fw-semibold fs-7 w-225px"
+                                        data-kt-menu="true">
+
+                                        <!-- View Details -->
                                         <div class="px-3 menu-item">
                                             <a href="{{ route('contacts.show', $contact->id) }}"
-                                                class="px-3 menu-link">View Details</a>
-                                        </div>                                        
+                                                class="px-3 menu-link">
+                                                <i class="ki-outline ki-eye fs-5 me-2"></i>
+                                                View Details
+                                            </a>
+                                        </div>
 
-                                        @if ($contact->status !== 'replied')                                            
+                                        @if ($contact->status !== 'replied')
                                             <div class="px-3 menu-item">
                                                 <form action="{{ route('contacts.update-status', $contact->id) }}"
-                                                    method="POST" style="display: inline;">
+                                                    method="POST">
                                                     @csrf
                                                     @method('PUT')
                                                     <input type="hidden" name="status" value="replied">
                                                     <button type="submit"
-                                                        class="p-0 px-3 menu-link btn btn-link text-start w-100">Mark
-                                                        as Replied</button>
+                                                        class="px-3 bg-transparent border-0 menu-link w-100 text-start">
+                                                        <i class="ki-outline ki-check fs-5 me-2"></i>
+                                                        Mark as Replied
+                                                    </button>
                                                 </form>
-                                            </div>                                            
+                                            </div>
                                         @endif
 
-                                        @if ($contact->status !== 'closed')                                            
+                                        @if ($contact->status !== 'closed')
                                             <div class="px-3 menu-item">
                                                 <form action="{{ route('contacts.update-status', $contact->id) }}"
-                                                    method="POST" style="display: inline;">
+                                                    method="POST">
                                                     @csrf
                                                     @method('PUT')
                                                     <input type="hidden" name="status" value="closed">
                                                     <button type="submit"
-                                                        class="p-0 px-3 menu-link btn btn-link text-start w-100">Mark
-                                                        as Closed</button>
+                                                        class="px-3 bg-transparent border-0 menu-link w-100 text-start">
+                                                        <i class="ki-outline ki-lock fs-5 me-2"></i>
+                                                        Mark as Closed
+                                                    </button>
                                                 </form>
-                                            </div>                                            
+                                            </div>
                                         @endif
-                                        
+
                                         <div class="px-3 menu-item">
                                             <form action="{{ route('contacts.destroy', $contact->id) }}" method="POST"
-                                                onsubmit="return confirm('Are you sure you want to delete this contact message?');">
+                                                class="delete-contact-form">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
-                                                    class="p-0 px-3 menu-link btn btn-link text-danger text-start w-100">Delete</button>
+                                                    class="px-3 bg-transparent border-0 menu-link w-100 text-start">
+                                                    <i class="ki-outline ki-trash fs-5 me-2"></i>
+                                                    Delete
+                                                </button>
                                             </form>
-                                        </div>                                        
-                                    </div>                                    
+                                        </div>
+                                    </div>
                                 </td>
+
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="7" class="py-10 text-center">
                                     <div class="d-flex flex-column align-items-center">
                                         <i class="mb-3 text-gray-400 ki-outline ki-message-text-2 fs-3x"></i>
-                                        <span class="text-gray-600 fs-5">No contact
-                                            messages
-                                            found</span>
+                                        <span class="text-gray-600 fs-5">
+                                            No contact messages found
+                                        </span>
                                     </div>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
-            </div>            
-            
+            </div>
+
             @if ($contacts->hasPages())
-                <div class="flex-wrap pt-5 d-flex justify-content-between align-items-center">
-                    <div class="text-gray-700 fs-6 fw-semibold">
-                        Showing {{ $contacts->firstItem() }} to
-                        {{ $contacts->lastItem() }}
-                        of {{ $contacts->total() }} entries
+                <div class="flex-wrap mt-4 pagination-card d-flex justify-content-between align-items-center">
+                    <div class="pagination-info">
+                        Showing
+                        <span>{{ $contacts->firstItem() }}</span> –
+                        <span>{{ $contacts->lastItem() }}</span>
+                        of
+                        <span>{{ $contacts->total() }}</span> entries
                     </div>
-                    {{ $contacts->links() }}
+
+                    <div class="pagination-links">
+                        {{ $contacts->appends(request()->query())->onEachSide(1)->links('pagination::bootstrap-4') }}
+                    </div>
                 </div>
-            @endif            
-        </div>        
+            @endif
+            <style>
+                .pagination-card {
+                    background: #ffffff;
+                    border-radius: 12px;
+                    padding: 16px 20px;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+                }
+
+                .pagination-info {
+                    font-size: 14px;
+                    color: #6b7280;
+                }
+
+                .pagination-info span {
+                    font-weight: 600;
+                    color: #111827;
+                }
+
+                .pagination-links .page-link {
+                    border-radius: 8px !important;
+                    margin: 0 4px;
+                    border: none;
+                    color: #374151;
+                }
+
+                .pagination-links .page-item.active .page-link {
+                    background-color: #6366f1;
+                    color: #fff;
+                }
+
+                .pagination-links .page-link:hover {
+                    background-color: #eef2ff;
+                }
+            </style>
+        </div>
     </div>
 
 </x-default-layout>
 
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        $(document).ready(function() {
-            // Search functionality
-            $('#search-input').on('keyup', function(e) {
-                if (e.key === 'Enter') {
-                    filterContacts();
-                }
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // --- Success Toast ---
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: @json(session('success')),
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            @endif
+
+            // --- Delete Confirmation ---
+            document.querySelectorAll('.delete-contact-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'This action cannot be undone!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete it!',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
             });
 
-            // Status filter
-            $('#status-filter').on('change', function() {
-                filterContacts();
+            // --- Status Update Confirmation ---
+            document.querySelectorAll('form[action*="update-status"]').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const status = form.querySelector('input[name="status"]').value;
+                    let message = '';
+                    let icon = 'question';
+
+                    if (status === 'replied') message = 'Mark this message as Replied?';
+                    if (status === 'closed') message = 'Mark this message as Closed?';
+
+                    Swal.fire({
+                        title: 'Confirm Action',
+                        text: message,
+                        icon: icon,
+                        showCancelButton: true,
+                        confirmButtonColor: '#6366f1',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
             });
 
-            function filterContacts() {
-                const search = $('#search-input').val();
-                const status = $('#status-filter').val();
 
+            // --- Search & Filter ---
+            const searchInput = document.getElementById('search-input');
+            const statusFilter = document.getElementById('status-filter');
+
+            function performSearch() {
                 const url = new URL(window.location.href);
-                url.searchParams.set('search', search);
-                url.searchParams.set('status', status);
+                const searchValue = searchInput.value.trim();
+                const statusValue = statusFilter.value;
 
+                // Always set search param (even if empty, to clear it)
+                if (searchValue) {
+                    url.searchParams.set('search', searchValue);
+                } else {
+                    url.searchParams.delete('search');
+                }
+
+                // Always set status param (even if 'all', to clear it)
+                if (statusValue && statusValue !== 'all') {
+                    url.searchParams.set('status', statusValue);
+                } else {
+                    url.searchParams.delete('status');
+                }
+
+                // Always reset to first page
+                url.searchParams.delete('page');
                 window.location.href = url.toString();
             }
+
+            // Ensure Select2 is initialized if present
+            if (window.jQuery && typeof $(statusFilter).select2 === 'function') {
+                $(statusFilter).select2({
+                    minimumResultsForSearch: Infinity
+                });
+            }
+
+            // Listen for Enter key on search
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') performSearch();
+            });
+
+            // Listen for change on dropdown (works for both native and Select2)
+            statusFilter.addEventListener('change', performSearch);
+
+            // Clear Filters button resets both fields visually
+            const clearBtn = document.querySelector('.btn-light-danger.btn-sm');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    searchInput.value = '';
+                    statusFilter.value = 'all';
+                    if (window.jQuery && typeof $(statusFilter).select2 === 'function') {
+                        $(statusFilter).val('all').trigger('change.select2');
+                    }
+                    window.location.href = clearBtn.getAttribute('href');
+                });
+            }
+
         });
     </script>
 @endpush

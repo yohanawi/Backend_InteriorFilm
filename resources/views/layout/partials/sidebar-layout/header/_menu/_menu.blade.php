@@ -583,46 +583,53 @@
                 </div>
                 <div class="row g-0">
                     <div class="col-6">
-                        <a href="#"
+                        <a href={{ route('catalog.products.index') }}
                             class="p-6 d-flex flex-column flex-center h-100 bg-hover-light border-end border-bottom">
-                            <i class="mb-2 ki-outline ki-dollar fs-3x text-primary"></i>
-                            <span class="mb-0 text-gray-800 fs-5 fw-semibold">Accounting</span>
-                            <span class="text-gray-500 fs-7">eCommerce</span>
+                            <i class="mb-2 ki-outline ki-parcel fs-3x text-primary"></i>
+                            <span class="mb-0 text-gray-800 fs-5 fw-semibold">Products</span>
+                            <span class="text-gray-500 fs-7"></span>
+                            Related Products
                         </a>
                     </div>
                     <div class="col-6">
-                        <a href="#" class="p-6 d-flex flex-column flex-center h-100 bg-hover-light border-bottom">
-                            <i class="mb-2 ki-outline ki-sms fs-3x text-primary"></i>
-                            <span class="mb-0 text-gray-800 fs-5 fw-semibold">Administration</span>
-                            <span class="text-gray-500 fs-7">Console</span>
+                        <a href={{ route('orders.index') }}
+                            class="p-6 d-flex flex-column flex-center h-100 bg-hover-light border-bottom">
+                            <i class="mb-2 ki-outline ki-package fs-3x text-primary"></i>
+                            <span class="mb-0 text-gray-800 fs-5 fw-semibold">Orders</span>
+                            <span class="text-gray-500 fs-7"></span>
+                            Recent Orders
                         </a>
                     </div>
                     <div class="col-6">
-                        <a href="#" class="p-6 d-flex flex-column flex-center h-100 bg-hover-light border-end">
-                            <i class="mb-2 ki-outline ki-abstract-41 fs-3x text-primary"></i>
-                            <span class="mb-0 text-gray-800 fs-5 fw-semibold">Projects</span>
-                            <span class="text-gray-500 fs-7">Pending Tasks</span>
+                        <a href={{ route('wrapping-areas.index') }}
+                            class="p-6 d-flex flex-column flex-center h-100 bg-hover-light border-end">
+                            <i class="mb-2 ki-outline ki-question fs-3x text-primary"></i>
+                            <span class="mb-0 text-gray-800 fs-5 fw-semibold">Wrapping Areas</span>
+                            <span class="text-gray-500 fs-7"></span>
+                            Wrapping Areas
                         </a>
                     </div>
                     <div class="col-6">
-                        <a href="#" class="p-6 d-flex flex-column flex-center h-100 bg-hover-light">
-                            <i class="mb-2 ki-outline ki-briefcase fs-3x text-primary"></i>
+                        <a href={{ route('customers.index') }}
+                            class="p-6 d-flex flex-column flex-center h-100 bg-hover-light">
+                            <i class="mb-2 ki-outline ki-people fs-3x text-primary"></i>
                             <span class="mb-0 text-gray-800 fs-5 fw-semibold">Customers</span>
-                            <span class="text-gray-500 fs-7">Latest cases</span>
+                            <span class="text-gray-500 fs-7"></span>
+                            Recent Customers
                         </a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="app-navbar-item ms-2 ms-lg-6">
+        {{-- <div class="app-navbar-item ms-2 ms-lg-6">
             <div class="btn btn-icon btn-custom btn-color-gray-600 btn-active-color-primary w-35px h-35px w-md-40px h-md-40px position-relative"
                 id="kt_drawer_chat_toggle">
                 <i class="ki-outline ki-notification-on fs-1"></i>
                 <span
                     class="top-0 mt-3 position-absolute start-100 translate-middle badge badge-circle badge-danger w-15px h-15px ms-n4">5</span>
             </div>
-        </div>
+        </div> --}}
 
         <div class="app-navbar-item ms-2 ms-lg-6" id="kt_header_user_menu_toggle">
             @php
