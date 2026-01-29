@@ -82,12 +82,6 @@
     </table>
 </div>
 
-<div class="mt-5 d-flex justify-content-between align-items-center">
-    <div class="text-muted fs-7">
-        Showing {{ $categories->firstItem() ?? 0 }}
-        to {{ $categories->lastItem() ?? 0 }}
-        of {{ $categories->total() }} entries
-    </div>
-
-    {!! $categories->links('pagination::bootstrap-5') !!}
+<div class="gap-4 mt-4 d-flex justify-content-end align-items-center">
+     {!! $categories->links('pagination::bootstrap-5') !!}
 </div>
