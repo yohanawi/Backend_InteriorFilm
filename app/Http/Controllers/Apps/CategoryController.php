@@ -17,20 +17,35 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Category::with('catalog')->withCount('products')
-            ->whereNull('deleted_at');
-
-        if ($request->has('catalog_id') && $request->catalog_id) {
-            $query->where('catalog_id', $request->catalog_id);
-        }
-
-        $categories = $query->orderBy('sort_order')
+        $categories = Category::with('catalog')
+            ->withCount('products')
+            ->whereNull('deleted_at')
+            ->when($request->search, function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            })
+            ->when($request->catalog_id, function ($q) use ($request) {
+                $q->where('catalog_id', $request->catalog_id);
+            })
+            ->orderBy('sort_order')
             ->orderBy('name')
             ->paginate(10);
 
-        $catalogs = Catalog::whereNull('deleted_at')->orderBy('name')->get();
+        // AJAX request → return only table + pagination
+        if ($request->ajax()) {
+            return view(
+                'pages.apps.catalog.categories.partials.table',
+                compact('categories')
+            )->render();
+        }
 
-        return view('pages.apps.catalog.categories.index', compact('categories', 'catalogs'));
+        $catalogs = Catalog::whereNull('deleted_at')
+            ->orderBy('name')
+            ->get();
+
+        return view(
+            'pages.apps.catalog.categories.index',
+            compact('categories', 'catalogs')
+        );
     }
 
     /**
